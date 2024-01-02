@@ -6,7 +6,7 @@ Technologies used:
 - JMeter
 - Terraform
 - Azure
-- Zerotier
+- ZeroTier VPN
 - Ansible
 
 ## Start
@@ -20,6 +20,6 @@ chmod +x run.sh
 
 1. Terraform creates different VMs on different parts of the world using the Azure provider
 2. Ansible configures all of the dependencies and installs the required components
-3. All of the VMs connect through ZeroTier
+3. All of the slave VMs connect to the master using ZeroTier VPN
 4. The JMeter test file is run with the master/slave configuration
 
