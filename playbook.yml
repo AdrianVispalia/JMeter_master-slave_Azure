@@ -1,0 +1,67 @@
+---
+- name: JMeter slave install & preparation
+  hosts: linux
+  become: yes  # To execute tasks with sudo
+
+  tasks:
+    - name: Update apt package cache
+      apt:
+        update_cache: yes
+
+    - name: Install required packages
+      apt:
+        name:
+          - openjdk-11-jdk
+          - net-tools
+          - vim
+          - wget
+        state: present
+        update_cache: yes
+
+    - name: Download Apache JMeter
+      get_url:
+        url: https://archive.apache.org/dist/jmeter/binaries/apache-jmeter-5.6.2.tgz
+        dest: /tmp/apache-jmeter-5.6.2.tgz
+
+    - name: Extract JMeter archive
+      ansible.builtin.unarchive:
+        src: /tmp/apache-jmeter-5.6.2.tgz
+        dest: /opt
+        remote_src: yes
+
+    - name: Add line to jmeter.properties
+      shell:
+        "sudo sed -i '/server.rmi.ssl.disable/s/$/\\nserver.rmi.ssl.disable=true/' /opt/apache-jmeter-5.6.2/bin/jmeter.properties"
+
+    - name: Add line to user.properties
+      shell:
+        "sudo sed -i '/server.rmi.ssl.disable/s/$/\\nserver.rmi.ssl.disable=true/' /opt/apache-jmeter-5.6.2/bin/user.properties"
+
+    - name: Check last commands
+      shell:
+        "cat /opt/apache-jmeter-5.6.2/bin/jmeter.properties | grep disable"
+      register: displayfile
+
+    - debug:
+        msg: "{{ displayfile.stdout_lines }}"
+
+    - name: Check
+      ansible.builtin.debug:
+        var: result
+        verbosity: 2
+
+    - name: Install ZeroTier
+      shell:
+        "curl -s https://install.zerotier.com | sudo bash"
+
+    - name: Join ZeroTier network
+      shell:
+        "sudo zerotier-cli join e3918db4839e3f02"
+
+    - name: Authorise on Zerotier these PCs
+      shell:
+        sleep 10
+
+    - name: Execute server
+      shell:
+        "/opt/apache-jmeter-5.6.2/bin/jmeter-server -Djava.rmi.server.hostname=$(ip address show ztk4jbhc4b | grep -oP 'inet [0-9.]+' | grep -oP '[0-9.]+')"
