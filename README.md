@@ -1,6 +1,6 @@
 # JMeter_master-slave_Azure
 
-Project in order to test a website (latency, thorughput, etc.) from different VMs on different parts of the world.
+Project in order to test a website (latency, thorughput, etc.) from different VMs on different parts of the world. Requires to have Azure-cli and an account with ZeroTier VPN.
 
 Technologies used:
 - JMeter
@@ -15,6 +15,8 @@ Technologies used:
 chmod +x run.sh
 ./run.sh
 ```
+
+> Note: there is a 10s window (indicated on the terminal) that is given for you to approve on the ZeroTier VPN's website the VMs
 
 ## Description
 
